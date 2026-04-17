@@ -1,0 +1,103 @@
+import json
+
+class UIGate:
+    """Czerwony Mur / Zielona Bramka - Bezwzględny walidator"""
+    @staticmethod
+    def validate(payload: dict) -> tuple[bool, dict]:
+        required_fields = ["customer_name", "product_id", "quantity"]
+        
+        # 1. Walidacja obecności kluczy
+        for field in required_fields:
+            if field not in payload:
+                return False, {"error": f"Brak wymaganego pola: {field}"}
+                
+        # 2. Walidacja typów (Zero 'czarów z mleka')
+        if not isinstance(payload["quantity"], int):
+            return False, {"error": "Quantity musi być twardą liczbą całkowitą (int)."}
+            
+        return True, payload
+
+class AgenticOSOrchestrator:
+    def __init__(self):
+        # API Score motywuje Handlowca w jego własnym kontenerze
+        self.api_score = 100
+        # Jedyna wspólna "pamięć" to ustrukturyzowany Audit Trail na poziomie Orkiestratora
+        self.audit_trail = []
+
+    def call_sandbox_1_sales(self, user_intent: str) -> dict:
+        """
+        [KONTENER 1] - Otwarty interfejs, relacje.
+        Zadanie: Ekstrakcja danych do ustrukturyzowanej formy RSO.
+        Ograniczenia: Brak dostępu do bazy, brak decyzyjności.
+        """
+        print("[KONTENER 1 -> Handlowiec]: Analizuję mowę klienta...")
+        
+        # Symulacja odpowiedzi LLM-a typu "Customer Friend"
+        # W rzeczywistości to request HTTP POST do drugiego kontenera/serwisu
+        simulated_response = {
+            "customer_name": "Tech Corp",
+            "product_id": "SKU-99",
+            "quantity": 150 # Handlowiec myśli, że załatwi wszystko
+        }
+        return simulated_response
+
+    def call_sandbox_2_analyst(self, clean_rso: dict) -> dict:
+        """
+        [KONTENER 2] - Zamknięty system, zimny analityk.
+        Zadanie: Weryfikacja względem SOP i zasobów (Read-only).
+        Ograniczenia: Brak kontaktu z klientem, nie zna historii rozmowy.
+        """
+        print("[KONTENER 2 -> Analityk]: Otrzymałem sterylny RSO. Zaczynam audyt...")
+        
+        # Symulacja weryfikacji przez model analityczny
+        # Analityk widzi tylko JSON-a. Nie obchodzi go, co klient naopowiadał Handlowcowi.
+        stock_limit = 100
+        
+        if clean_rso["quantity"] > stock_limit:
+            return {
+                "decision": "REFUSED",
+                "reason": "Przekroczenie limitu stanów magazynowych na ten SKU.",
+                "action": "Odeślij formularz do korekty."
+            }
+            
+        return {"decision": "APPROVED", "reason": "SOP spełnione."}
+
+    def process_transaction(self, raw_customer_input: str):
+        print(f"\n--- NOWA TRANSAKCJA START ---")
+        
+        # 1. PING DO PIASKOWNICY 1
+        rso_candidate = self.call_sandbox_1_sales(raw_customer_input)
+        
+        # 2. PRZEJŚCIE PRZEZ MUR (UIGate wewnątrz Orkiestratora)
+        is_valid, validated_data = UIGate.validate(rso_candidate)
+        
+        if not is_valid:
+            self.api_score -= 10
+            print(f"[UI GATE ODPOWIADA]: ❌ BLOKADA -> {validated_data['error']}")
+            print(f"[API SCORE]: Spada do {self.api_score}. Oczekuję korekty Handlowca.")
+            # W rzeczywistości tutaj zwracamy Alignment Form z powrotem do SandBoksu 1
+            return
+            
+        print("[UI GATE ODPOWIADA]: ✅ PRZEJŚCIE ZAAKCEPTOWANE. Dane są zdezynfekowane.")
+
+        # 3. PING DO PIASKOWNICY 2 (Tylko czyste dane)
+        analyst_verdict = self.call_sandbox_2_analyst(validated_data)
+        
+        # 4. ROZLICZENIE (Audit Trail i API)
+        self.audit_trail.append({
+            "input": raw_customer_input,
+            "rso": validated_data,
+            "verdict": analyst_verdict
+        })
+        
+        if analyst_verdict["decision"] == "APPROVED":
+            self.api_score += 5
+            print(f"[SYSTEM]: 🟢 DECYZJA POZYTYWNA. ({analyst_verdict['reason']}) API = {self.api_score}")
+        else:
+            self.api_score -= 5
+            print(f"[SYSTEM]: 🔴 DECYZJA NEGATYWNA. ({analyst_verdict['reason']}) API = {self.api_score}")
+            print("[SYSTEM]: Generuję zamknięty 'Alignment Form' dla Handlowca.")
+
+# Uruchomienie Orkiestratora
+orchestrator = AgenticOSOrchestrator()
+orchestrator.process_transaction("Halo, chcę kupić od was ten produkt SKU-99. Biorę 150 sztuk od razu, dogadamy się z szefem!")
