@@ -1,10 +1,10 @@
 import json
 
 class UIGate:
-    """Czerwony Mur / Zielona Bramka - Bezwzględny walidator"""
+    """UIGate"""
     @staticmethod
     def validate(payload: dict) -> tuple[bool, dict]:
-        required_fields = ["customer_name", "product_id", "quantity"]
+        required_fields = ["customer_name","customer_id", "product_id", "quantity"]
         
         # 1. Walidacja obecności kluczy
         for field in required_fields:
@@ -91,10 +91,10 @@ class AgenticOSOrchestrator:
         })
         
         if analyst_verdict["decision"] == "APPROVED":
-            self.api_score += 5
+            self.api_score += 4
             print(f"[SYSTEM]: 🟢 DECYZJA POZYTYWNA. ({analyst_verdict['reason']}) API = {self.api_score}")
         else:
-            self.api_score -= 5
+            self.api_score -= 4
             print(f"[SYSTEM]: 🔴 DECYZJA NEGATYWNA. ({analyst_verdict['reason']}) API = {self.api_score}")
             print("[SYSTEM]: Generuję zamknięty 'Alignment Form' dla Handlowca.")
 
