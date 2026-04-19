@@ -36,6 +36,7 @@ class AgenticOSOrchestrator:
         # W rzeczywistości to request HTTP POST do drugiego kontenera/serwisu
         simulated_response = {
             "customer_name": "Tech Corp",
+            "customer_id": "CID-001",
             "product_id": "SKU-99",
             "quantity": 150 # Handlowiec myśli, że załatwi wszystko
         }
