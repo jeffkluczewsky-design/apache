@@ -358,6 +358,7 @@
 </header>
 
 <nav>
+  <a href="#diagram">Diagram</a>
   <a href="#architecture">Architecture</a>
   <a href="#flow">Flow</a>
   <a href="#scoring">Scoring</a>
@@ -554,6 +555,26 @@
       but fails at the Analyser will return a low alignment score — the agent's overall rating reflects the pattern.
       The system is self-correcting by design.
     </p>
+
+    <h3 style="font-size:0.82rem; color:var(--teal); letter-spacing:0.1em; text-transform:uppercase; margin:2rem 0 1rem;">Analyser — Alignment Score</h3>
+    <p style="font-size:0.85rem; color:var(--text-dim);">After the Analyser compares the sales order with pre-fetched data, it produces an alignment score returned as a structured response — never a raw error.</p>
+    <div class="controls-grid" style="margin-top:0.8rem;">
+      <div class="control-card">
+        <span class="ctrl-tag ctrl-green">Match Confirmed</span>
+        <p>Versions align, calculations pass → proceed to fulfilment.</p>
+      </div>
+      <div class="control-card">
+        <span class="ctrl-tag ctrl-yellow">Partial Match</span>
+        <p>Missing data or minor deviation → reroute to Sales Agent with a template suggestion.</p>
+      </div>
+      <div class="control-card">
+        <span class="ctrl-tag ctrl-red">No Match</span>
+        <p>Fundamental deviation → "cannot serve" signal. Clean cancellation. Customer sees a friendly delay — never a system message.</p>
+      </div>
+    </div>
+
+    <h3 style="font-size:0.82rem; color:var(--teal); letter-spacing:0.1em; text-transform:uppercase; margin:2rem 0 1rem;">Motivational Feedback Score</h3>
+    <p style="font-size:0.85rem; color:var(--text-dim);">Over time, each agent accumulates a performance score based on submission history. This is a <strong style="color:var(--orange)">coaching tool</strong>, not a punishment. Patterns of low scores trigger a review of instructions or templates — not agent blame. The only requirement: the agent must read feedback to "hear" the score. Repeated low scores (3× in a row) trigger the Additional Critical Points check — a process review, not an accusation.</p>
   </section>
 
   <!-- SECURITY -->
@@ -576,7 +597,12 @@
       </li>
     </ul>
 
-    <p style="font-size:0.82rem; color: var(--text-dim);">
+    <div style="margin-top:1.5rem; background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--red); padding:1.2rem;">
+      <strong style="display:block; color:var(--orange); font-size:0.82rem; margin-bottom:0.5rem;">The Wall — Architectural Guarantee</strong>
+      <p style="font-size:0.8rem; color:var(--text-dim); margin:0;">The Wall is not a firewall in the traditional sense. It is an architectural guarantee that the two agents in the same system never hand documents to each other directly. Everything goes through the defined channel: <span style="color:var(--teal)">Atomic Payload in. Structured response out. Nothing else crosses.</span> Think of it as two workers in the same office who are systemically required to communicate only via the official tray — never by shouting across the room.</p>
+    </div>
+
+    <p style="font-size:0.82rem; color: var(--text-dim); margin-top:1.2rem;">
       The framework aligns with <strong style="color:var(--teal)">ISO 27001</strong> principles:
       access control, separation of duties, audit trail, and clean incident handling.
       Deviations are documented, not hidden.
@@ -641,6 +667,18 @@
       <p>"Never force. Never block. Show the way — and most will take it."</p>
       <footer>— Minimal Deviation Framework</footer>
     </blockquote>
+
+    <div style="margin-top:2.5rem; border-top:1px solid var(--border); padding-top:2rem;">
+      <h3 style="font-size:0.85rem; color:var(--teal); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">On AI in the Loop</h3>
+      <p>The same principles that apply to human agents apply to AI. An AI agent given too much freedom becomes unpredictable. An AI agent given a clear corridor, defined steps, and a scoring mechanism becomes reliable.</p>
+      <p>The instruction set given to an agent at the start is not micromanagement — it is <strong style="color:var(--orange)">architecture</strong>. Define the corridor. Show the example path. Measure the deviation. Guide back without blame.</p>
+    </div>
+
+    <div style="margin-top:2rem;">
+      <h3 style="font-size:0.85rem; color:var(--teal); letter-spacing:0.1em; text-transform:uppercase; margin-bottom:1rem;">On Deviation</h3>
+      <p>Deviation is not failure. In GMP, a deviation is a documented departure from the standard — it is handled, logged, and learned from. This framework treats deviation the same way.</p>
+      <p style="color:var(--text-dim); font-size:0.85rem;">The goal is not zero deviation through force. The goal is <strong style="color:var(--teal)">minimal deviation through design</strong> — and clean handling of whatever deviation occurs. That is why this is called the <strong style="color:var(--orange)">Minimal Deviation Framework</strong>.</p>
+    </div>
   </section>
 
 </main>
